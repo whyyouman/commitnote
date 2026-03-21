@@ -43,6 +43,9 @@ type PersistedSource = {
   url?: string;
 };
 
+/** Set `true` to show Podcast Style in the Generate Podcast modal */
+const SHOW_PODCAST_STYLE_UI = false;
+
 /** Split view: Sources | Chat — uses same theme as home (bg-background, etc.) */
 export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
   const [chatInput, setChatInput] = useState("");
@@ -81,17 +84,12 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
     | "News Style"
   >("Auto (Recommended)");
 
-  const [podcastSpeakers, setPodcastSpeakers] = useState<
-    | "Single Narrator"
-    | "Two Speakers (Host + Guest)"
-  >("Two Speakers (Host + Guest)");
-
-  const [podcastVoice, setPodcastVoice] = useState<
-    | "Male (Calm)"
-    | "Female (Energetic)"
-    | "Deep Voice"
-    | "Friendly Voice"
-  >("Male (Calm)");
+  const [podcastHostVoice, setPodcastHostVoice] = useState<"Male" | "Female">(
+    "Male",
+  );
+  const [podcastGuestVoice, setPodcastGuestVoice] = useState<"Male" | "Female">(
+    "Female",
+  );
 
   const [podcastLength, setPodcastLength] = useState<
     | "Short (2–3 min)"
@@ -201,11 +199,6 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
 
   const addWebsiteSource = useCallback(() => {
     const url = window.prompt("Enter website URL");
-    if (url?.trim()) setAddUrls((prev) => [...prev, url.trim()]);
-  }, []);
-
-  const addDriveSource = useCallback(() => {
-    const url = window.prompt("Paste Google Drive share link");
     if (url?.trim()) setAddUrls((prev) => [...prev, url.trim()]);
   }, []);
 
@@ -374,7 +367,6 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
               onRemovePasted={removeAddPasted}
               onPickFiles={() => addFileInputRef.current?.click()}
               onAddWebsite={addWebsiteSource}
-              onAddDriveLink={addDriveSource}
               onAddCopiedText={addCopiedTextSource}
             />
 
@@ -520,8 +512,8 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             setPodcastMode("ai");
             setPodcastAiProvider("OpenAI");
             setPodcastStyle("Auto (Recommended)");
-            setPodcastSpeakers("Two Speakers (Host + Guest)");
-            setPodcastVoice("Male (Calm)");
+            setPodcastHostVoice("Male");
+            setPodcastGuestVoice("Female");
             setPodcastLength("Medium (5–7 min)");
           }
         }}
@@ -602,6 +594,13 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                     AI model
                   </button>
                 </div>
+                <p
+                  id="podcast-generation-mode-scripting"
+                  data-testid="podcast-generation-mode-scripting"
+                  className="mt-2 text-xs font-medium text-muted-foreground"
+                >
+                  Scripting
+                </p>
               </div>
 
               {podcastMode === "ai" ? (
@@ -632,80 +631,91 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                 </div>
               ) : null}
 
-              <div>
-                <label
-                  htmlFor="podcast-style"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Podcast Style
-                </label>
-                <select
-                  id="podcast-style"
-                  className="mt-2 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                  value={podcastStyle}
-                  onChange={(e) =>
-                    setPodcastStyle(
-                      e.target.value as typeof podcastStyle,
-                    )
-                  }
-                >
-                  <option value="Auto (Recommended)">
-                    Auto (Recommended)
-                  </option>
-                  <option value="Storytelling Podcast">
-                    Storytelling Podcast
-                  </option>
-                  <option value="Educational Podcast">
-                    Educational Podcast
-                  </option>
-                  <option value="News Style">News Style</option>
-                </select>
-              </div>
+              {SHOW_PODCAST_STYLE_UI ? (
+                <div>
+                  <label
+                    htmlFor="podcast-style"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Podcast Style
+                  </label>
+                  <select
+                    id="podcast-style"
+                    className="mt-2 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                    value={podcastStyle}
+                    onChange={(e) =>
+                      setPodcastStyle(
+                        e.target.value as typeof podcastStyle,
+                      )
+                    }
+                  >
+                    <option value="Auto (Recommended)">
+                      Auto (Recommended)
+                    </option>
+                    <option value="Storytelling Podcast">
+                      Storytelling Podcast
+                    </option>
+                    <option value="Educational Podcast">
+                      Educational Podcast
+                    </option>
+                    <option value="News Style">News Style</option>
+                  </select>
+                </div>
+              ) : null}
 
               <div>
-                <label
-                  htmlFor="podcast-speakers"
-                  className="text-sm font-medium text-foreground"
-                >
+                <div className="text-sm font-medium text-foreground">
                   Speakers
-                </label>
-                <select
-                  id="podcast-speakers"
-                  className="mt-2 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                  value={podcastSpeakers}
-                  onChange={(e) =>
-                    setPodcastSpeakers(
-                      e.target.value as typeof podcastSpeakers,
-                    )
-                  }
-                >
-                  <option value="Single Narrator">Single Narrator</option>
-                  <option value="Two Speakers (Host + Guest)">
-                    Two Speakers (Host + Guest)
-                  </option>
-                </select>
+                </div>
+                <div className="mt-2 rounded-lg border border-dashed border-border bg-muted/30 px-3 py-3 text-center text-sm text-muted-foreground">
+                  2 character podcast available
+                </div>
               </div>
 
-              <div>
-                <label
-                  htmlFor="podcast-voice"
-                  className="text-sm font-medium text-foreground"
-                >
-                  Voice
-                </label>
-                <select
-                  id="podcast-voice"
-                  className="mt-2 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-                  value={podcastVoice}
-                  onChange={(e) =>
-                    setPodcastVoice(e.target.value as typeof podcastVoice)
-                  }
-                >
-                  <option value="Male (Calm)">Male (Calm)</option>
-                  <option value="Female (Energetic)">Female (Energetic)</option>
-                  <option value="Deep Voice">Deep Voice</option>
-                  <option value="Friendly Voice">Friendly Voice</option>
-                </select>
+              <div className="sm:col-span-2">
+                <div className="text-sm font-medium text-foreground">Voice</div>
+                <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor="podcast-voice-host"
+                      className="text-xs font-medium text-muted-foreground"
+                    >
+                      Host
+                    </label>
+                    <select
+                      id="podcast-voice-host"
+                      className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                      value={podcastHostVoice}
+                      onChange={(e) =>
+                        setPodcastHostVoice(e.target.value as "Male" | "Female")
+                      }
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="podcast-voice-guest"
+                      className="text-xs font-medium text-muted-foreground"
+                    >
+                      Guest
+                    </label>
+                    <select
+                      id="podcast-voice-guest"
+                      className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                      value={podcastGuestVoice}
+                      onChange={(e) =>
+                        setPodcastGuestVoice(
+                          e.target.value as "Male" | "Female",
+                        )
+                      }
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -754,17 +764,21 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                 const selected = uploadedItems.find(
                   (s) => s.id === podcastSelectedId,
                 );
+                const stylePart = SHOW_PODCAST_STYLE_UI
+                  ? ` | Style: ${podcastStyle}`
+                  : "";
+                const voicePart = `Host: ${podcastHostVoice} | Guest: ${podcastGuestVoice}`;
                 if (selected) {
                   setChatInput(
                     podcastMode === "ai"
-                      ? `Generate Podcast (AI model: ${podcastAiProvider}) from: ${selected.label} | Style: ${podcastStyle} | Speakers: ${podcastSpeakers} | Voice: ${podcastVoice} | Length: ${podcastLength}`
-                      : `Generate Podcast (Offline) from: ${selected.label} | Style: ${podcastStyle} | Speakers: ${podcastSpeakers} | Voice: ${podcastVoice} | Length: ${podcastLength}`,
+                      ? `Generate Podcast (AI model: ${podcastAiProvider}) from: ${selected.label}${stylePart} | ${voicePart} | Length: ${podcastLength}`
+                      : `Generate Podcast (Offline) from: ${selected.label}${stylePart} | ${voicePart} | Length: ${podcastLength}`,
                   );
                 } else {
                   setChatInput(
                     podcastMode === "ai"
-                      ? `Generate Podcast (AI model: ${podcastAiProvider}) | Style: ${podcastStyle} | Speakers: ${podcastSpeakers} | Voice: ${podcastVoice} | Length: ${podcastLength}`
-                      : `Generate Podcast (Offline) | Style: ${podcastStyle} | Speakers: ${podcastSpeakers} | Voice: ${podcastVoice} | Length: ${podcastLength}`,
+                      ? `Generate Podcast (AI model: ${podcastAiProvider})${stylePart} | ${voicePart} | Length: ${podcastLength}`
+                      : `Generate Podcast (Offline)${stylePart} | ${voicePart} | Length: ${podcastLength}`,
                   );
                 }
                 setPodcastModalOpen(false);

@@ -9,31 +9,6 @@ import {
   Youtube,
 } from "lucide-react";
 
-function GoogleDriveIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 87.3 78"
-      aria-hidden
-      width={18}
-      height={16}
-    >
-      <path
-        fill="#00AC47"
-        d="m6.6 66.85 3.21 6.24 3.13 6.1a3.57 3.57 0 0 0 6.31-.02l10.5-18.4-20.15-11.92z"
-      />
-      <path
-        fill="#EA4335"
-        d="M43.65 25.63 33.2 13.02a3.57 3.57 0 0 0-6.3 0L6.6 43.78l20.13 11.9 17.17-30.05z"
-      />
-      <path
-        fill="#4285F4"
-        d="M67.17 52h-47.1l-10.58 18.4c-.98 1.7.25 3.82 2.21 3.82h55.5a3.57 3.57 0 0 0 3.14-1.85L87.22 23.08c.98-1.7-.25-3.83-2.21-3.83H63.6L53.04 41.3 67.17 52z"
-      />
-    </svg>
-  );
-}
-
 type PillButtonProps = {
   children: React.ReactNode;
   onClick: () => void;
@@ -67,7 +42,6 @@ export type CreateNoteUploadZoneProps = {
   onRemovePasted: (index: number) => void;
   onPickFiles: () => void;
   onAddWebsite: () => void;
-  onAddDriveLink: () => void;
   onAddCopiedText: () => void;
 };
 
@@ -82,7 +56,6 @@ export function CreateNoteUploadZone({
   onRemovePasted,
   onPickFiles,
   onAddWebsite,
-  onAddDriveLink,
   onAddCopiedText,
 }: CreateNoteUploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -174,10 +147,6 @@ export function CreateNoteUploadZone({
               strokeWidth={0}
             />
             Websites
-          </PillButton>
-          <PillButton onClick={onAddDriveLink}>
-            <GoogleDriveIcon className="shrink-0" />
-            Drive
           </PillButton>
           <PillButton onClick={onAddCopiedText}>
             <ClipboardPaste className="size-4 shrink-0 text-zinc-200" />

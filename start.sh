@@ -1,14 +1,14 @@
 #!/bin/bash
 
 echo "Starting backend..."
-cd apps/api
+cd apps/services
 python -m venv .
-source venv/bin/activate
+source ./bin/activate
 pip install -r requirements.txt &
-uvicorn main:app --reload &
+uvicorn apps/services/main:app --reload &
 
 echo "Starting frontend..."
-cd ../web
+cd apps/frontend  
 npm install &
 npm run build &
 npm run start

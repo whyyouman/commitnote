@@ -90,6 +90,8 @@ export function HomePage() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [createTitle, setCreateTitle] = useState("");
+  /** false = offline processing, true = AI model */
+  const [createUseAiModel, setCreateUseAiModel] = useState(true);
   const [createFiles, setCreateFiles] = useState<File[]>([]);
   const [createUrls, setCreateUrls] = useState<string[]>([]);
   const [createPastedSnippets, setCreatePastedSnippets] = useState<string[]>(
@@ -106,6 +108,7 @@ export function HomePage() {
 
   const resetCreateForm = useCallback(() => {
     setCreateTitle("");
+    setCreateUseAiModel(true);
     setCreateFiles([]);
     setCreateUrls([]);
     setCreatePastedSnippets([]);
@@ -158,11 +161,6 @@ export function HomePage() {
 
   function addWebsiteSource() {
     const url = window.prompt("Enter website URL");
-    if (url?.trim()) setCreateUrls((prev) => [...prev, url.trim()]);
-  }
-
-  function addDriveSource() {
-    const url = window.prompt("Paste Google Drive share link");
     if (url?.trim()) setCreateUrls((prev) => [...prev, url.trim()]);
   }
 
@@ -309,6 +307,10 @@ export function HomePage() {
       localStorage.setItem(
         `notebookllm:noteSources:${newId}`,
         JSON.stringify(persistedItems),
+      );
+      localStorage.setItem(
+        `notebookllm:noteInferenceMode:${newId}`,
+        createUseAiModel ? "ai" : "offline",
       );
     } catch {
       // Ignore storage errors (private mode, blocked storage, etc.)
@@ -459,6 +461,48 @@ export function HomePage() {
               />
             </div>
 
+            <div className="grid w-1/2 min-w-0 gap-1">
+              <span className="text-xs font-medium text-muted-foreground">
+                Processing
+              </span>
+              <div className="flex items-center justify-between gap-2 rounded-md border border-input bg-muted/20 px-2.5 py-1.5">
+                <span
+                  className={`text-xs ${
+                    !createUseAiModel
+                      ? "font-medium text-foreground"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  Offline
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={createUseAiModel}
+                  aria-label="Toggle between offline and AI model processing"
+                  onClick={() => setCreateUseAiModel((v) => !v)}
+                  className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    createUseAiModel ? "bg-primary" : "bg-border"
+                  }`}
+                >
+                  <span
+                    className={`inline-block size-4 transform rounded-full bg-background shadow-sm transition-transform ${
+                      createUseAiModel ? "translate-x-4" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+                <span
+                  className={`text-xs ${
+                    createUseAiModel
+                      ? "font-medium text-foreground"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  AI model
+                </span>
+              </div>
+            </div>
+
             <CreateNoteUploadZone
               key={uploadZoneKey}
               fileInputRef={createFileInputRef}
@@ -471,7 +515,6 @@ export function HomePage() {
               onRemovePasted={removeCreatePasted}
               onPickFiles={() => createFileInputRef.current?.click()}
               onAddWebsite={addWebsiteSource}
-              onAddDriveLink={addDriveSource}
               onAddCopiedText={addCopiedTextSource}
             />
 

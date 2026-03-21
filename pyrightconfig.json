@@ -1,0 +1,13 @@
+{
+  "include": ["apps/services/src"],
+  "exclude": ["**/node_modules", "apps/services/lib"],
+  "venvPath": "apps",
+  "venv": "services",
+  "executionEnvironments": [
+    {
+      "root": "apps/services",
+      "pythonVersion": "3.12",
+      "extraPaths": ["."]
+    }
+  ]
+}
