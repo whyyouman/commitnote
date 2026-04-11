@@ -1,4 +1,4 @@
-"""Multi-file upload for PDF and DOCX."""
+"""HTTP API for RAG ingestion: accept PDF/DOCX uploads and load documents for the pipeline."""
 
 from __future__ import annotations
 
@@ -13,10 +13,10 @@ from pydantic import BaseModel
 from langchain_core.documents import Document
 from pipeline.rag.ingestion.document_loader import DocumentLoader
 
-router = APIRouter(prefix="/upload", tags=["upload"])
+router = APIRouter(prefix="/upload", tags=["ingestion"])
 
-# apps/services/uploads
-UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "uploads"
+# apps/services/uploads (four levels: rag_router -> routers -> src -> services)
+UPLOAD_DIR = Path(__file__).resolve().parents[3] / "uploads"
 
 ALLOWED_EXTENSIONS = frozenset({".pdf", ".docx"})
 ALLOWED_CONTENT_TYPES = frozenset(
@@ -35,7 +35,7 @@ class UploadedFileInfo(BaseModel):
     path: str
     content_type: str | None
     size_bytes: int
-    data: list[Document]
+    data: list[Document] | None = None
 
 class MultiUploadResponse(BaseModel):
     files: list[UploadedFileInfo]
