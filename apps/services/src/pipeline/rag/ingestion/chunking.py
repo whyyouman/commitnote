@@ -1,9 +1,19 @@
 import re
 from collections import defaultdict
 from copy import deepcopy
+
+import tiktoken
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 from .embedding import Embedding
+
+# OpenAI text-embedding-* models use cl100k_base; count tokens at ingest so short noise never hits Chroma.
+_TIKTOKEN_ENC = tiktoken.get_encoding("cl100k_base")
+
+
+def _token_count(text: str) -> int:
+    return len(_TIKTOKEN_ENC.encode(text or ""))
 
 # Split before "Chapter 2", "PART III", etc. (PDF text often loses line breaks.)
 _CHAPTER_BOUNDARY = re.compile(
@@ -21,12 +31,13 @@ _CHAPTER_LABEL = re.compile(
 
 
 class Chunker:
-    def __init__(self, data: list[Document]):
+    def __init__(self, data: list[Document], *, min_tokens: int = 20):
         self.data = data
+        self.min_tokens = max(0, min_tokens)
         self.embedding = Embedding()
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1200,
-            chunk_overlap=100,
+            chunk_overlap=200,
             separators=["\n\n", "\n", ". ", "! ", "? ", " "],
         )
 
@@ -139,12 +150,17 @@ class Chunker:
         l1_docs = self._documents_per_chapter(self.data)
         final_chunks = self.text_splitter.split_documents(l1_docs)
         
-        # Final filter — split ke baad bhi check karo
+        # Final filter — references drop + min token count at ingest (not at query time)
         clean_chunks = [
-            c for c in final_chunks 
+            c
+            for c in final_chunks
             if not self._is_reference_chunk(c.page_content)
+            and _token_count(c.page_content) >= self.min_tokens
         ]
-        
-        print(f"Total: {len(final_chunks)}, After filter: {len(clean_chunks)}")
+
+        print(
+            f"Total: {len(final_chunks)}, "
+            f"After ref+min_tokens (>={self.min_tokens}): {len(clean_chunks)}"
+        )
         self.embedding.create_collection("normalization_paper", clean_chunks)
         return clean_chunks

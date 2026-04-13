@@ -1,4 +1,4 @@
-"""HTTP API for hybrid RAG retrieval (BM25 + dense + RRF fusion)."""
+"""HTTP API for hybrid RAG retrieval (BM25 + dense + RRF fusion, then cross-encoder rerank)."""
 
 from __future__ import annotations
 
