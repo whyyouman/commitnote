@@ -15,6 +15,13 @@ _TIKTOKEN_ENC = tiktoken.get_encoding("cl100k_base")
 def _token_count(text: str) -> int:
     return len(_TIKTOKEN_ENC.encode(text or ""))
 
+
+def _safe_int(value: object, default: int = 0) -> int:
+    try:
+        return int(str(value))
+    except (TypeError, ValueError):
+        return default
+
 # Split before "Chapter 2", "PART III", etc. (PDF text often loses line breaks.)
 _CHAPTER_BOUNDARY = re.compile(
     r"(?=(?:^|\n)(?:\d+\.?\s+[A-Z][A-Z\s]{3,}|"  # "3 MOTIVATION..."
@@ -31,8 +38,9 @@ _CHAPTER_LABEL = re.compile(
 
 
 class Chunker:
-    def __init__(self, data: list[Document], *, min_tokens: int = 20):
+    def __init__(self, data: list[Document], note_uid: str, *, min_tokens: int = 20):
         self.data = data
+        self.note_uid = note_uid
         self.min_tokens = max(0, min_tokens)
         self.embedding = Embedding()
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -119,23 +127,34 @@ class Chunker:
 
     def _documents_per_chapter(self, docs: list[Document]) -> list[Document]:
         """Merge pages per file in order, split on chapter headings, attach chapter metadata."""
-        by_source: dict[str, list[Document]] = defaultdict(list)
-        for d in docs:
-            by_source[d.metadata.get("source", "")].append(d)
+        # Group by stable per-file identity. Fall back to source, then synthetic key.
+        by_file: dict[str, list[Document]] = defaultdict(list)
+        for doc_idx, d in enumerate(docs):
+            file_key = (
+                str(d.metadata.get("upload_file_path") or "")
+                or str(d.metadata.get("source") or "")
+                or f"__unknown_file_{doc_idx}"
+            )
+            by_file[file_key].append(d)
 
         chapter_docs: list[Document] = []
-        for _source, pages in by_source.items():
-            pages.sort(key=lambda x: int(x.metadata.get("page", 0) or 0))
+        grouped_files = sorted(
+            by_file.items(),
+            key=lambda item: _safe_int(item[1][0].metadata.get("upload_file_index"), 10**9),
+        )
+        for file_key, pages in grouped_files:
+            pages.sort(key=lambda x: _safe_int(x.metadata.get("page"), 0))
             base_meta = deepcopy(pages[0].metadata)
             full_text, page_spans = self._merged_text_and_page_spans(pages)
             sections = self._split_text_into_chapters(full_text)
-            # _documents_per_chapter mein
+            base_meta["file_key"] = file_key
+            base_meta["page_count"] = len(pages)
             for idx, (label, content, start_off) in enumerate(sections):
                 if not content.strip():
                     continue
                 if self._is_reference_chunk(content):
                     continue
-                
+
                 meta = {
                     **base_meta,
                     "chapter_index": idx,
@@ -162,5 +181,5 @@ class Chunker:
             f"Total: {len(final_chunks)}, "
             f"After ref+min_tokens (>={self.min_tokens}): {len(clean_chunks)}"
         )
-        self.embedding.create_collection("normalization_paper", clean_chunks)
+        self.embedding.create_collection(self.note_uid, clean_chunks)
         return clean_chunks

@@ -4,16 +4,23 @@ from __future__ import annotations
 
 import os
 import uuid
+from collections import defaultdict
 from pathlib import Path
+from uuid import UUID
 
 import aiofiles
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from langchain_core.documents import Document
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
+from db.database import get_db
+from db.models import Note, NoteFiles
+from fastapi import Depends
 from pipeline.rag.ingestion.document_loader import DocumentLoader
 
-router = APIRouter(prefix="/upload", tags=["ingestion"])
+router = APIRouter(prefix="/notes", tags=["ingestion"])
 
 # apps/services/uploads (four levels: rag_router -> routers -> src -> services)
 UPLOAD_DIR = Path(__file__).resolve().parents[3] / "uploads"
@@ -30,6 +37,7 @@ _OCTET_STREAM = "application/octet-stream"
 
 
 class UploadedFileInfo(BaseModel):
+    title: str
     original_filename: str
     stored_filename: str
     path: str
@@ -38,6 +46,8 @@ class UploadedFileInfo(BaseModel):
     data: list[Document] | None = None
 
 class MultiUploadResponse(BaseModel):
+    note_uid: str
+    chunk_count: int
     files: list[UploadedFileInfo]
 
 
@@ -57,15 +67,42 @@ def _content_type_ok(content_type: str | None) -> bool:
     return base == _OCTET_STREAM
 
 
-@router.post("/documents", response_model=MultiUploadResponse)
+def _normalize_user_id(user_id: str) -> UUID | None:
+    """Return UUID object, or None for non-UUID input."""
+    try:
+        return UUID(user_id)
+    except (TypeError, ValueError):
+        return None
+
+
+def _group_chunks_by_file(data: list[Document]) -> dict[str, list[Document]]:
+    grouped: dict[str, list[Document]] = defaultdict(list)
+    for doc in data:
+        path_key = str(
+            doc.metadata.get("upload_file_path")
+            or doc.metadata.get("source")
+            or ""
+        )
+        if path_key:
+            grouped[path_key].append(doc)
+    return grouped
+
+
+@router.post("/create", response_model=MultiUploadResponse)
 async def upload_documents(
+    title: str = Form(..., description="Title for the note"),
+    user_id: str = Form(..., description="User ID for the note"),
     files: list[UploadFile] = File(..., description="One or more .pdf or .docx files"),
+    db: Session = Depends(get_db),
 ) -> MultiUploadResponse:
     if not files:
         raise HTTPException(status_code=400, detail="No files provided.")
 
+    normalized_user_id = _normalize_user_id(user_id)
+    note_uid = str(uuid.uuid4())
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     saved: list[UploadedFileInfo] = []
+    saved_paths: list[str] = []
 
     for upload in files:
         if not _extension_ok(upload.filename):
@@ -92,21 +129,45 @@ async def upload_documents(
                 size += len(chunk)
                 await out.write(chunk)
 
-        document_loader = DocumentLoader(file_paths=[os.fspath(dest)])
-        data = document_loader.loadDocument()
-
         saved.append(
             UploadedFileInfo(
+                title=title,
                 original_filename=upload.filename or "",
                 stored_filename=stored_name,
                 path=os.fspath(dest),
                 content_type=upload.content_type,
                 size_bytes=size,
-                data=data,
+                data=None,
             )
         )
+        saved_paths.append(os.fspath(dest))
 
-    return MultiUploadResponse(files=saved)
+    document_loader = DocumentLoader(file_paths=saved_paths)
+    data = document_loader.loadDocument(note_uid=note_uid)
+    chunks_by_path = _group_chunks_by_file(data)
+
+    for file_info in saved:
+        file_info.data = chunks_by_path.get(file_info.path, [])
+
+    try:
+        note = Note(
+            title=title,
+            user_id=normalized_user_id,
+            note_uid=note_uid,
+        )
+        db.add(note)
+        db.flush()
+
+        db.add_all([NoteFiles(file_path=file_path, note_id=note.id) for file_path in saved_paths])
+    except SQLAlchemyError as exc:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to insert note in Postgres: {exc}",
+        ) from exc
+
+    db.commit()
+    return MultiUploadResponse(note_uid=note_uid, chunk_count=len(data), files=saved)
 
 
 @router.get("/form", response_class=HTMLResponse, include_in_schema=False)

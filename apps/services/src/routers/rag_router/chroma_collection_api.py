@@ -3,28 +3,47 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 import chromadb
 from chromadb.errors import NotFoundError
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from pipeline.rag.chroma_config import get_chroma_path
 from routers.rag_router.retrieval_service_api import get_retriever
 
-# Same persistence path as `pipeline.rag.ingestion.embedding` and `retrieval.retriever`.
-_CHROMA_PATH = "data/chroma"
+if TYPE_CHECKING:
+    from chromadb.api import ClientAPI
 
 router = APIRouter(prefix="/chroma", tags=["chromadb"])
 
 
 @lru_cache(maxsize=1)
-def _chroma_client() -> chromadb.ClientAPI:
-    return chromadb.PersistentClient(path=_CHROMA_PATH)
+def _chroma_client() -> ClientAPI:
+    return chromadb.PersistentClient(path=get_chroma_path())
 
 
 class DeleteCollectionResponse(BaseModel):
     deleted: bool = True
     name: str = Field(..., description="Name of the removed collection")
+
+
+class ListCollectionsResponse(BaseModel):
+    collections: list[str] = Field(
+        default_factory=list, description="All available ChromaDB collection names"
+    )
+
+
+@router.get("/collections", response_model=ListCollectionsResponse)
+def list_collections() -> ListCollectionsResponse:
+    client = _chroma_client()
+    try:
+        raw_collections = client.list_collections()
+        names = sorted([c.name if hasattr(c, "name") else str(c) for c in raw_collections])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+    return ListCollectionsResponse(collections=names)
 
 
 @router.delete(

@@ -9,6 +9,7 @@ from langchain_openai import OpenAIEmbeddings
 import chromadb
 from chromadb.api.types import Embeddable, EmbeddingFunction
 from chromadb.utils import embedding_functions
+from pipeline.rag.chroma_config import get_chroma_path
 
 load_dotenv()
 
@@ -51,7 +52,7 @@ class Embedding:
 
         self._model = model or os.getenv("EMBEDDING_MODEL") or _DEFAULT_MODEL
         self._embeddings = OpenAIEmbeddings(model=self._model)
-        self._chroma = chromadb.PersistentClient(path="data/chroma")
+        self._chroma = chromadb.PersistentClient(path=get_chroma_path())
 
     @property
     def model(self) -> str:
