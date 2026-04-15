@@ -293,7 +293,7 @@ export function PodcastWorkspace({
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    className="inline-flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+                    className="inline-flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
                     disabled={!voiceTextToRead.trim()}
                     onClick={() => {
                       if (isSpeaking || isPaused) pauseResumeTTS();
@@ -302,22 +302,22 @@ export function PodcastWorkspace({
                     aria-label={isPaused ? "Resume" : isSpeaking ? "Pause" : "Play"}
                   >
                     {isPaused ? (
-                      <Play className="size-5" />
+                      <Play className="size-4" />
                     ) : isSpeaking ? (
-                      <Pause className="size-5" />
+                      <Pause className="size-4" />
                     ) : (
-                      <Play className="size-5" />
+                      <Play className="size-4" />
                     )}
                   </button>
 
                   <button
                     type="button"
-                    className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
+                    className="inline-flex size-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
                     disabled={!voiceTextToRead.trim()}
                     onClick={stopSpeaking}
                     aria-label="Stop"
                   >
-                    <RotateCcw className="size-5" />
+                    <RotateCcw className="size-4" />
                   </button>
 
                   <div className="min-w-0 flex-1">

@@ -24,7 +24,7 @@ function PillButton({
     <button
       type={type}
       onClick={onClick}
-      className="inline-flex shrink-0 items-center gap-2 rounded-full border border-zinc-600/90 bg-zinc-800/90 px-3.5 py-2 text-xs font-medium text-zinc-100 shadow-sm transition-colors hover:bg-zinc-700/90 focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:outline-none sm:text-sm"
+      className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-zinc-600/90 bg-zinc-800/90 px-2.5 py-1.5 text-[11px] font-medium text-zinc-100 shadow-sm transition-colors hover:bg-zinc-700/90 focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:outline-none"
     >
       {children}
     </button>
@@ -198,7 +198,7 @@ export function CreateNoteUploadZone({
               </span>
               <button
                 type="button"
-                className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                 onClick={() => onRemoveFile(index)}
                 aria-label={`Remove ${file.name}`}
               >
@@ -217,7 +217,7 @@ export function CreateNoteUploadZone({
               </span>
               <button
                 type="button"
-                className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                 onClick={() => onRemoveUrl(index)}
                 aria-label="Remove link"
               >
@@ -237,7 +237,7 @@ export function CreateNoteUploadZone({
               </span>
               <button
                 type="button"
-                className="inline-flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
                 onClick={() => onRemovePasted(index)}
                 aria-label="Remove pasted text"
               >
