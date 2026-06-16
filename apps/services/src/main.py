@@ -9,7 +9,10 @@ if str(_SRC) not in sys.path:
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from routers.upload import router as upload_router
+from routers.notes_api import router as notes_router
+from routers.rag_router.chroma_collection_api import router as chroma_collection_router
+from routers.rag_router.ingestion_service_api import router as ingestion_router
+from routers.rag_router.retrieval_service_api import router as retrieval_router
 
 
 def _patch_openapi_binary_files(schema: object) -> None:
@@ -53,7 +56,10 @@ def custom_openapi() -> dict:
 
 app = FastAPI(title="Services", version="0.1.0")
 app.openapi = custom_openapi
-app.include_router(upload_router)
+app.include_router(ingestion_router)
+app.include_router(retrieval_router)
+app.include_router(notes_router)
+app.include_router(chroma_collection_router)
 
 
 @app.get("/")

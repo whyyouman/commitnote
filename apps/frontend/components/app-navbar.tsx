@@ -9,18 +9,18 @@ export function AppNavbar() {
           href="/"
           className="flex items-center gap-2 font-semibold tracking-tight"
         >
-          <span className="flex size-9 items-center justify-center rounded-lg border bg-muted/50">
-            <NotebookPen className="size-5 text-foreground" aria-hidden />
+          <span className="flex size-8 items-center justify-center rounded-lg border bg-muted/50">
+            <NotebookPen className="size-4 text-foreground" aria-hidden />
           </span>
           <span className="hidden sm:inline">NotebookLLM</span>
         </Link>
 
         <Link
           href="/setting"
-          className="flex size-9 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex size-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           aria-label="Settings"
         >
-          <Settings className="size-5" />
+          <Settings className="size-4" />
         </Link>
       </div>
     </header>

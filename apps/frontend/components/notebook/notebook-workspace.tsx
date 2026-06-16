@@ -373,7 +373,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             <DialogFooter>
               <button
                 type="button"
-                className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-muted"
+                className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground hover:bg-muted"
                 onClick={closeAddSourcesModal}
               >
                 Cancel
@@ -385,7 +385,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                   addUrls.length === 0 &&
                   addPastedSnippets.length === 0
                 }
-                className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+                className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
               >
                 Add
               </button>
@@ -573,7 +573,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                     type="button"
                     aria-pressed={podcastMode === "offline"}
                     onClick={() => setPodcastMode("offline")}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
                       podcastMode === "offline"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted/60 text-foreground hover:bg-muted"
@@ -585,7 +585,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                     type="button"
                     aria-pressed={podcastMode === "ai"}
                     onClick={() => setPodcastMode("ai")}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
                       podcastMode === "ai"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted/60 text-foreground hover:bg-muted"
@@ -751,14 +751,14 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             ) : null}
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-muted"
+              className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground hover:bg-muted"
               onClick={() => setPodcastModalOpen(false)}
             >
               Cancel
             </button>
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+              className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
               disabled={!podcastSelectedId}
               onClick={() => {
                 const selected = uploadedItems.find(
@@ -883,7 +883,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                     type="button"
                     aria-pressed={storyMode === "offline"}
                     onClick={() => setStoryMode("offline")}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
                       storyMode === "offline"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted/60 text-foreground hover:bg-muted"
@@ -895,7 +895,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                     type="button"
                     aria-pressed={storyMode === "ai"}
                     onClick={() => setStoryMode("ai")}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                    className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
                       storyMode === "ai"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted/60 text-foreground hover:bg-muted"
@@ -941,14 +941,14 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             ) : null}
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-muted"
+              className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground hover:bg-muted"
               onClick={() => setStoryModalOpen(false)}
             >
               Cancel
             </button>
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+              className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
               disabled={!storySelectedId}
               onClick={() => {
                 const selected = uploadedItems.find(
@@ -1039,7 +1039,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  className={`inline-flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`inline-flex flex-1 items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     quizMode === "offline"
                       ? "bg-primary text-primary-foreground"
                       : "bg-background text-foreground hover:bg-muted"
@@ -1051,7 +1051,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                 </button>
                 <button
                   type="button"
-                  className={`inline-flex flex-1 items-center justify-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`inline-flex flex-1 items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                     quizMode === "ai"
                       ? "bg-primary text-primary-foreground"
                       : "bg-background text-foreground hover:bg-muted"
@@ -1161,14 +1161,14 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             ) : null}
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-muted"
+              className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground hover:bg-muted"
               onClick={() => setQuizModalOpen(false)}
             >
               Cancel
             </button>
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+              className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
               disabled={!quizSelectedId}
               onClick={() => {
                 const selected = uploadedItems.find(
@@ -1286,7 +1286,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                   type="button"
                   aria-pressed={reportsMode === "offline"}
                   onClick={() => setReportsMode("offline")}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                  className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
                     reportsMode === "offline"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted/60 text-foreground hover:bg-muted"
@@ -1298,7 +1298,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                   type="button"
                   aria-pressed={reportsMode === "ai"}
                   onClick={() => setReportsMode("ai")}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                  className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition ${
                     reportsMode === "ai"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted/60 text-foreground hover:bg-muted"
@@ -1407,14 +1407,14 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             ) : null}
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-muted"
+              className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground hover:bg-muted"
               onClick={() => setReportsModalOpen(false)}
             >
               Cancel
             </button>
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+              className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
               disabled={!reportsSelectedId}
               onClick={() => {
                 const selected = uploadedItems.find(
@@ -1489,17 +1489,17 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             </h1>
             <button
               type="button"
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               aria-label="Toggle panel layout"
             >
-              <LayoutPanelLeft className="size-5" strokeWidth={1.5} />
+              <LayoutPanelLeft className="size-4" strokeWidth={1.5} />
             </button>
           </header>
 
           <div className="shrink-0 px-4 pb-4 md:px-5">
             <button
               type="button"
-              className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-transparent py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              className="flex w-full items-center justify-center gap-1.5 rounded-full border border-border bg-transparent py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted"
               onClick={openAddSourcesModal}
             >
               <Plus className="size-4" strokeWidth={2} />
@@ -1513,7 +1513,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                 <div className="flex items-center justify-between gap-3">
                   <button
                     type="button"
-                    className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
                     onClick={() => setActiveSourceId(null)}
                   >
                     <ArrowLeft className="size-4" />
@@ -1521,7 +1521,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
                   </button>
                   <button
                     type="button"
-                    className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
+                    className="inline-flex size-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground"
                     aria-label="Delete selected"
                     onClick={() => {
                       const id = activeSource.id;
@@ -1669,11 +1669,11 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
             <div className="flex items-center gap-0.5">
               <button
                 type="button"
-                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 aria-label="Features"
                 onClick={() => setGenModalOpen(true)}
               >
-                <Sparkles className="size-5" strokeWidth={1.5} />
+                <Sparkles className="size-4" strokeWidth={1.5} />
               </button>
             </div>
           </header>
@@ -1698,7 +1698,7 @@ export function NotebookWorkspace({ noteId }: NotebookWorkspaceProps) {
               </span>
               <button
                 type="button"
-                className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
                 disabled={sourceCount === 0 && !chatInput.trim()}
                 aria-label="Send"
               >
